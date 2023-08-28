@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>OS Labels</title>
+    <meta charset='utf-8'>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel='stylesheet' href='https://unpkg.com/maplibre-gl@3.3.0/dist/maplibre-gl.css' />
+    <script src='https://unpkg.com/maplibre-gl@3.3.0/dist/maplibre-gl.js'></script>
+    <style>
+        body { 
+          margin: 0; 
+          padding: 0; 
+        }
+
+        html, body, #map { 
+          height: 100%; 
+          width: 100%;
+        }
+    </style>
+  </head>
+
+  <body>
+    <div id="map"></div>
+
+    <script>
+      const style = {
+        "version": 8,
+        "sources": {
+          "labels": {
+            "type": "vector",
+            "tiles": [ location.origin + location.pathname + "output/os-labels/{z}/{x}/{y}.pbf" ],
+            "maxzoom": 14
+          }
+        },
+        "layers": [{
+          "id": "labels-fill",
+          "type": "fill",
+          "source": "labels",
+          "source-layer": "oslabels",
+          "paint": {
+            "fill-color": "#ff0000"
+          }
+        }]
+      };
+
+      const map = new maplibregl.Map({
+        style: "https://api.maptiler.com/maps/streets/style.json?key=KVZVsqgpG5DhG9pfsOIx",
+        center: [-3.1, 51.25],
+        zoom: 10,
+        container: "map"
+      });
+      
+      map.on('load', function() {
+        map.addSource("labels", {
+          "type": "vector",
+          "tiles": [ location.origin + location.pathname + "output/os-labels/{z}/{x}/{y}.pbf" ],
+          "maxzoom": 14
+        });
+
+        map.addLayer({
+          "id": "labels-fill",
+          "type": "fill",
+          "source": "labels",
+          "source-layer": "oslabels",
+          "paint": {
+            "fill-color": "#ff0000"
+          }
+        });
+      });
+
+      map.on('click', 'labels-fill', e => {
+        const coordinates = e.features[0].geometry.coordinates.slice()[0];
+
+        const sum = arr => arr.reduce((sum, val) => sum + val, 0);
+
+        const centroidX = sum(coordinates.map(t => t[0])) / coordinates.length;
+        const centroidY = sum(coordinates.map(t => t[1])) / coordinates.length;
+
+        const { text, score, postocr_label } = e.features[0].properties;
+
+        new maplibregl.Popup()
+          .setLngLat([centroidX, centroidY])
+          .setHTML(text)
+          .addTo(map);
+      });
+    </script>
+  </body>
+</html>
