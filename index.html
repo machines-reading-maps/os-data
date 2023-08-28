@@ -23,26 +23,6 @@
     <div id="map"></div>
 
     <script>
-      const style = {
-        "version": 8,
-        "sources": {
-          "labels": {
-            "type": "vector",
-            "tiles": [ location.origin + location.pathname + "labels/{z}/{x}/{y}.pbf" ],
-            "maxzoom": 14
-          }
-        },
-        "layers": [{
-          "id": "labels-fill",
-          "type": "fill",
-          "source": "labels",
-          "source-layer": "oslabels",
-          "paint": {
-            "fill-color": "#ff0000"
-          }
-        }]
-      };
-
       const map = new maplibregl.Map({
         style: "https://api.maptiler.com/maps/streets/style.json?key=KVZVsqgpG5DhG9pfsOIx",
         center: [-3.1, 51.25],
@@ -53,7 +33,7 @@
       map.on('load', function() {
         map.addSource("labels", {
           "type": "vector",
-          "tiles": [ location.origin + location.pathname + "output/os-labels/{z}/{x}/{y}.pbf" ],
+          "tiles": [ location.origin + location.pathname + "labels/{z}/{x}/{y}.pbf" ],
           "maxzoom": 14
         });
 
